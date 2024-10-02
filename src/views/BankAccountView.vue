@@ -3,8 +3,7 @@
     <h1>Bank Account Amount</h1>
 
     <span>Identifiant du compte</span><input v-model="accountNumber">
-    <button @click="getAccountAmount(accountNumber)">Vérifier</button>
-    <button @click="getTransactionsForAccount(accountNumber)">Voir Transactions</button>
+    <button @click="getAccountAmount(accountNumber), getTransactionsForAccount(accountNumber)">Vérifier</button>
 
     <p v-if="accountAmount">Montant du compte : {{ accountAmount }}</p>
     <p v-if="accountAmount === null">Aucun compte trouvé.</p>
