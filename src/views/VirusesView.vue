@@ -1,7 +1,9 @@
 <template>
   <div>
     <h1>Les virus</h1>
+
     <span>Filtres :</span>
+
     <label for="filterpriceactive">par prix</label>
     <input type="checkbox" v-model="filterPriceActive" id="filterpriceactive">
     <div v-if="filterPriceActive">
@@ -21,37 +23,16 @@
     <label for="filterstockactive">par stock</label>
     <input type="checkbox" v-model="filterStockActive" id="filterstockactive">
     <div v-if="filterStockActive">
-      <label for="filterstock">Stock ou non : </label>
+      <label for="filterstock">Stock disponible : </label>
       <input type="checkbox" v-model="stockFilter" id="filterstock">
     </div>
 
     <hr>
 
-    <ul v-if="filterViruses.length > 0">
-      <li v-for="(virus, index) in filterViruses" :key="index">{{ virus.name }} : {{ virus.price }}</li>
+    <ul v-if="filteredViruses.length > 0">
+      <li v-for="(virus, index) in filteredViruses" :key="index">{{ virus.name }} : {{ virus.price }}</li>
     </ul>
-    <p v-else>Aucun item disponible à partir du filtre sur le prix.</p>
-
-    <ul v-if="filterVirusesByName.length > 0">
-      <li v-for="(virus, index) in filterVirusesByName" :key="index">{{ virus.name }} : {{ virus.price }}</li>
-    </ul>
-    <p v-else>Aucun item ne correspond au filtre sur le nom.</p>
-
-    <table v-if="filterVirusesByStock.length > 0">
-      <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Prix</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(virus, index) in filterVirusesByStock" :key="index">
-        <td>{{ virus.name }}</td>
-        <td>{{ virus.price }}</td>
-      </tr>
-      </tbody>
-    </table>
-    <p v-else>Aucun virus disponible en stock.</p>
+    <p v-else>Aucun virus ne correspond aux filtres appliqués.</p>
 
     <p>Le tableau dans le store : {{ viruses }}</p>
     <p>Sous forme de liste avec certains champs</p>
@@ -62,7 +43,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import {mapState} from 'vuex'
 
 export default {
   name: 'VirusesView',
@@ -76,38 +57,18 @@ export default {
   }),
   computed: {
     ...mapState(['viruses']),
-
-    // Filtrage par prix
-    filterViruses() {
-      if (!this.filterPriceActive) {
-        // Si le filtre prix n'est pas actif, retourner tous les virus
-        return this.viruses;
+    filteredViruses() {
+      let filtered = this.viruses;
+      if (this.filterPriceActive && !isNaN(this.priceFilter) && this.priceFilter > 0) {
+        filtered = filtered.filter(v => v.price < this.priceFilter);
       }
-      if (isNaN(this.priceFilter) || this.priceFilter <= 0) {
-        return [];
+      if (this.filterNameActive && this.nameFilter) {
+        filtered = filtered.filter(v => v.name.toLowerCase().includes(this.nameFilter.toLowerCase()));
       }
-      return this.viruses.filter(v => v.price < this.priceFilter);
-    },
-
-    // Filtrage par nom
-    filterVirusesByName() {
-      if (!this.filterNameActive) {
-        // Si le filtre nom n'est pas actif, retourner tous les virus
-        return this.viruses;
+      if (this.filterStockActive && this.stockFilter) {
+        filtered = filtered.filter(v => v.stock);
       }
-      if (!this.nameFilter) {
-        return [];
-      }
-      return this.viruses.filter(v => v.name.toLowerCase().includes(this.nameFilter.toLowerCase()));
-    },
-
-    // Filtrage par stock
-    filterVirusesByStock() {
-      if (!this.filterStockActive) {
-        // Si le filtre stock n'est pas actif, retourner tous les virus
-        return this.viruses;
-      }
-      return this.viruses.filter(v => v.stock); // Filtrer les virus en stock
+      return filtered;
     }
   }
 }

@@ -2,8 +2,9 @@
   <div>
     <h1>Bank Account Amount</h1>
 
-    <span>Identifiant du compte</span><input v-model="accountNumber">
-    <button @click="getAccountAmount(accountNumber), getTransactionsForAccount(accountNumber)">Vérifier</button>
+    <span>Identifiant du compte</span><input v-model="accountNumber" @input="validateAccountNumber">
+    <button @click="getAccountAmount(accountNumber)" :disabled="!isAccountNumberValid">getAccountAmount</button>
+    <button @click="getTransactionsForAccount(accountNumber)" :disabled="!isAccountNumberValid">getTransactionsForAccount</button>
 
     <p v-if="accountAmount">Montant du compte : {{ accountAmount }}</p>
     <p v-if="accountAmount === null">Aucun compte trouvé.</p>
@@ -24,6 +25,7 @@ export default {
   name: 'BankAccountView',
   data: () => ({
     accountNumber: '',
+    isAccountNumberValid: false,
   }),
   computed: {
     ...mapState(['accountAmount']),
@@ -31,7 +33,11 @@ export default {
   },
   methods: {
     ...mapActions(['getAccountAmount']),
-    ...mapActions(['getTransactionsForAccount'])
+    ...mapActions(['getTransactionsForAccount']),
+    validateAccountNumber() {
+      const regex = /^[A-Za-z0-9]{22}-\d{7}$/;
+      this.isAccountNumberValid = regex.test(this.accountNumber);
+    }
   }
 }
 </script>
