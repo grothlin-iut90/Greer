@@ -15,6 +15,7 @@
       </li>
     </ul>
     <p v-else>Aucune transaction trouvée pour ce compte.</p>
+    <button @click="resetAccountNumber">reset</button>
   </div>
 </template>
 
@@ -37,6 +38,10 @@ export default {
     validateAccountNumber() {
       const regex = /^[A-Za-z0-9]{22}-\d{7}$/;
       this.isAccountNumberValid = regex.test(this.accountNumber);
+    },
+    resetAccountNumber() {
+      this.accountNumber = 0;
+      this.validateAccountNumber()
     }
   }
 }

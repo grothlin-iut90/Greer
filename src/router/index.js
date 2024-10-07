@@ -18,7 +18,7 @@ const routes = [
     component: () => import('../views/ShopLoginView.vue')
   },
   {
-    path: '/bank/amount',
+    path: '/bank/account',
     name: 'bankAmount',
     component: BankAccountView
   }
