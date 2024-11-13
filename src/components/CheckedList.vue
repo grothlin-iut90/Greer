@@ -32,12 +32,12 @@
 export default {
   name: 'CheckedList',
   props: {
-    data: Array, // les données sources
-    fields: Array, // le tableau contenant le nom des champs
-    itemCheck: Boolean, // s'il y a des cases à cocher
-    checked: Array, // le tableau des cases cochées
-    itemButton: Object, // l'objet pour les boutons d'items
-    listButton: Object, // l'objet pour le bouton de liste
+    data: { type: Array, default: () => [] },
+    fields: { type: Array, default: () => [] },
+    itemCheck: { type: Boolean, default: false },
+    checked: { type: Array, default: () => [] },
+    itemButton: { type: Object, default: () => ({ show: false, text: '' }) },
+    listButton: { type: Object, default: () => ({ show: false, text: '' }) },
   }
 }
 </script>

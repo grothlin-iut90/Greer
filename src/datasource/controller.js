@@ -29,6 +29,7 @@ function shopLogin(data) {
 }
 
 function getAllViruses() {
+  console.log("controller_items:", items);
   return {error: 0, data: items}
 }
 

@@ -1,14 +1,14 @@
 <template>
   <div>
-    <h1>Les virus</h1>
+    <h1>Les virus disponibles</h1>
 
+    <!-- Filtres -->
     <span>Filtres :</span>
-
     <label for="filterpriceactive">par prix</label>
     <input type="checkbox" v-model="filterPriceActive" id="filterpriceactive">
     <div v-if="filterPriceActive">
       <label for="filterprice">Prix inférieur à : </label>
-      <input v-model="priceFilter" id="filterprice">
+      <input v-model="priceFilter" id="filterprice" type="number">
     </div>
     <br>
 
@@ -29,47 +29,75 @@
 
     <hr>
 
-    <ul v-if="filteredViruses.length > 0">
-      <li v-for="(virus, index) in filteredViruses" :key="index">{{ virus.name }} : {{ virus.price }}</li>
-    </ul>
-    <p v-else>Aucun virus ne correspond aux filtres appliqués.</p>
+    <!-- Liste des virus filtrés avec cases à cocher et boutons -->
+    <CheckedList
+        :data="filteredViruses"
+        :fields="['name', 'price']"
+        :itemCheck="true"
+        :checked="virusCheckedStatus"
+        :itemButton="{ show: true, text: 'Détails' }"
+        :listButton="{ show: true, text: 'Voir sélection' }"
+        @checked-changed="handleCheckedChange"
+        @item-button-clicked="handleItemButtonClick"
+        @list-button-clicked="handleListButtonClick"
+    />
 
-    <p>Le tableau dans le store : {{ viruses }}</p>
-    <p>Sous forme de liste avec certains champs</p>
-    <ul>
-      <li v-for="(virus, index) in viruses" :key="index">{{ virus.name }} : {{ virus.price }}, {{ virus.stock }}</li>
-    </ul>
+    <!-- Message si aucun virus ne correspond aux filtres -->
+    <p v-if="filteredViruses.length === 0">Aucun virus ne correspond aux filtres appliqués.</p>
   </div>
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import CheckedList from '@/components/CheckedList.vue';
+import { mapState } from 'vuex';
 
 export default {
   name: 'VirusesView',
-  data: () => ({
-    priceFilter: 0,
-    nameFilter: "",
-    stockFilter: false,
-    filterPriceActive: false,
-    filterNameActive: false,
-    filterStockActive: false,
-  }),
+  components: {
+    CheckedList
+  },
+  data() {
+    return {
+      viruses: this.$store.state.viruses.map(virus => ({ ...virus, checked: false }))
+    };
+  },
   computed: {
     ...mapState(['viruses']),
+
+    // Liste des virus filtrés selon les critères de filtrage
     filteredViruses() {
-      let filtered = this.viruses;
-      if (this.filterPriceActive && !isNaN(this.priceFilter) && this.priceFilter > 0) {
-        filtered = filtered.filter(v => v.price < this.priceFilter);
-      }
-      if (this.filterNameActive && this.nameFilter) {
-        filtered = filtered.filter(v => v.name.toLowerCase().includes(this.nameFilter.toLowerCase()));
-      }
-      if (this.filterStockActive && this.stockFilter) {
-        filtered = filtered.filter(v => v.stock);
-      }
-      return filtered;
+      return this.viruses.filter(virus => {
+        const matchesPrice = !this.filterPriceActive || (virus.price < this.priceFilter);
+        const matchesName = !this.filterNameActive || (virus.name.toLowerCase().includes(this.nameFilter.toLowerCase()));
+        const matchesStock = !this.filterStockActive || (virus.stock);
+        return matchesPrice && matchesName && matchesStock;
+      });
+    },
+
+    // Tableau de booléens indiquant l'état des cases à cocher
+    virusCheckedStatus() {
+      return this.filteredViruses.map(virus => this.selected.includes(this.viruses.indexOf(virus)));
     }
+
+  },
+  methods: {
+    // Gère les changements d'état des cases à cocher
+    handleCheckedChange(index) {
+      this.filteredViruses[index].checked = !this.filteredViruses[index].checked;
+    },
+    handleListButtonClick() {
+      const selectedViruses = this.filteredViruses.filter(v => v.checked);
+      alert(`Virus sélectionnés: ${selectedViruses.map(v => v.name).join(', ')}`);
+    },
+
+    // Gère les clics sur les boutons de fin de ligne
+    handleItemButtonClick(index) {
+      const virus = this.filteredViruses[index];
+      alert(`Virus: ${virus.name}, Stock: ${virus.stock}, En vente: ${virus.onSale ? 'Oui' : 'Non'}`);
+    },
   }
-}
+};
 </script>
+
+<style scoped>
+</style>

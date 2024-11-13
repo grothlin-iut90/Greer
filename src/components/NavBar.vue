@@ -1,10 +1,12 @@
+
 <template>
   <div>
     <button
         v-for="(title, index) in titles"
         :key="index"
-        :style="{ backgroundColor: title.color }"
-        @click="onMenuClick(index)">
+        :style="{ backgroundColor: title.color, fontWeight: index === activeIndex ? 'bold' : 'normal' }"
+        @click="onMenuClick(index)"
+    >
       {{ title.text }}
     </button>
   </div>
@@ -13,14 +15,14 @@
 <script>
 export default {
   name: 'NavBar',
-  props: {
-    titles: {
-      type: Array,
-      required: true
-    }
+  data() {
+    return {
+      activeIndex: 0
+    };
   },
   methods: {
     onMenuClick(index) {
+      this.activeIndex = index;
       this.$emit('menu-clicked', index);
     }
   }

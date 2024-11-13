@@ -1,4 +1,5 @@
 import LocalSource from "@/datasource/controller";
+import {items} from "@/datasource/data";
 
 async function shopLoginFromLocalSource(data) {
   // rÃ©cupÃ©ration auprÃ¨s de la source locale
@@ -13,6 +14,7 @@ async function shopLoginFromAPI(data) {
 
 async function getAllVirusesFromLocalSource() {
   // rÃ©cupÃ©ration auprÃ¨s de la source locale
+  console.log("shop.services: ", items)
   return LocalSource.getAllViruses()
 }
 
